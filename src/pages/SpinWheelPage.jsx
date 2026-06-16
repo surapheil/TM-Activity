@@ -32,7 +32,7 @@ export default function SpinWheelPage() {
   ];
   const NO_WIN_COLOR = { bg: "#7a0000", fg: "#ffbbbb" };
 
-  // ── LOAD FROM LOCALSTORAGE (unchanged from original) ──────────────────────
+  // ── LOAD FROM LOCALSTORAGE ────────────────────────────────────────────────
   useEffect(() => {
     const saved = localStorage.getItem(`campaign_${id}`);
     if (!saved) {
@@ -49,7 +49,7 @@ export default function SpinWheelPage() {
     if (campaign.length > 0) drawWheel(wheelDegRef.current);
   }, [campaign]);
 
-  // ── BUILD SLICES: one per prize + one No Win ──────────────────────────────
+  // ── BUILD SLICES ──────────────────────────────────────────────────────────
   function buildSlices(items) {
     const all = [
       ...items.map((x, i) => ({ ...x, colorIdx: i, isNoWin: false })),
@@ -76,7 +76,7 @@ export default function SpinWheelPage() {
     return slices;
   }
 
-  // ── READ POINTER: what slice is at the top of the wheel right now? ────────
+  // ── READ POINTER ──────────────────────────────────────────────────────────
   function readPointer(slices, deg) {
     const normalized = ((-deg % 360) + 360) % 360;
     const frac = normalized / 360;
@@ -205,15 +205,14 @@ export default function SpinWheelPage() {
   };
 
   return (
-    // Mobile Wrapper Structure Matching Setup Page
     <div className="relative h-screen max-w-md mx-auto overflow-hidden bg-black text-white flex flex-col">
       
-      {/* BACKGROUND ASSETS (Bounded inside absolute context) */}
-      <div className="absolute inset-0 bg-black z-0" />
+      {/* ── BACKGROUND LAYER SYSTEM (z-0) ────────────────────────── */}
+      <div className="absolute inset-0 bg-black z-0 pointer-events-none" />
 
-      {/* Mandala Graphic Layer - Sharp at top */}
+      {/* Mandala Background Graphic */}
       <div
-        className="absolute inset-x-0 top-0 h-[45vh] opacity-[0.12] z-0" 
+        className="absolute inset-x-0 top-0 h-[30vh] opacity-[0.06] z-0 pointer-events-none" 
         style={{
           backgroundImage: `url(${mandalaPattern})`,
           backgroundRepeat: "no-repeat",
@@ -222,133 +221,133 @@ export default function SpinWheelPage() {
         }}
       />
 
-      {/* Premium Top Fading Overlay */}
-      <div className="absolute inset-x-0 top-0 h-[45vh] bg-gradient-to-b from-transparent to-black z-0 pointer-events-none" />
+      {/* Top Fading Overlays */}
+      <div className="absolute inset-x-0 top-0 h-[30vh] bg-gradient-to-b from-transparent to-black z-0 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-yellow-400/5 blur-[70px] z-0 pointer-events-none" />
 
-      {/* Golden Ambient Blur Blob */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-72 h-72 bg-yellow-400/10 blur-[100px] z-0 pointer-events-none" />
+      {/* ── INTERACTIVE CONTENT LAYER (z-10) ── */}
+      <div className="relative z-10 flex flex-col h-full w-full">
+        
+        {/* COMPACT BRAND HEADER (Reduced paddings and margins dramatically) */}
+        <div className="pt-3 px-6 flex-none flex flex-col items-center">
+          <div className="relative mb-1">
+            <div className="absolute inset-0 bg-yellow-400/10 blur-xl rounded-full" />
+            <img
+              src={logo}
+              alt="Habesha Golden Wheel"
+              className="relative w-24 object-contain" // Scaled down from w-36
+            />
+          </div>
 
-      {/* HEADER BAR (Sticky brand section) */}
-      <div className="relative z-10 pt-8 px-6 flex-none flex flex-col items-center">
-        {/* Brand Logo Integration */}
-        <div className="relative mb-3">
-          <div className="absolute inset-0 bg-yellow-400/20 blur-3xl rounded-full" />
-          <img
-            src={logo}
-            alt="Habesha Golden Wheel"
-            className="relative w-40 object-contain"
-          />
-        </div>
-
-        {/* Dynamic Outlet Context Subtitle */}
-        <div className="mb-2 text-center">
-          <h1 className="text-2xl font-black bg-gradient-to-r from-[#B8892F] via-[#F5E38A] to-[#B8892F] bg-clip-text text-transparent uppercase tracking-wide">
-            Lucky Spin
-          </h1>
-          <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#F5E38A] to-transparent mx-auto my-1" />
-          <p className="text-[10px] uppercase tracking-widest text-zinc-400">
-            Outlet: <span className="text-yellow-400 font-bold">{outlet?.name || "Unknown"}</span>
-          </p>
-        </div>
-      </div>
-
-      {/* MOBILE MIDDLE VIEWPORT: Safely scrolls remaining prizes or layout changes */}
-      <div className="relative z-10 flex-1 overflow-y-auto px-6 py-2 flex flex-col items-center gap-5 custom-scrollbar">
-
-        {/* Wheel Assembly */}
-        <div className="relative w-[300px] h-[300px] flex-none mt-2">
-          {/* Top Marker Pin */}
-          <div
-            className="absolute left-1/2 -translate-x-1/2 z-20"
-            style={{
-              top: "-14px",
-              width: 0,
-              height: 0,
-              borderLeft: "11px solid transparent",
-              borderRight: "11px solid transparent",
-              borderBottom: "24px solid #d4af37",
-              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.4))",
-            }}
-          />
-
-          {/* Canvas Component */}
-          <canvas
-            ref={canvasRef}
-            width={300}
-            height={300}
-            className="rounded-full"
-            style={{ border: "3px solid #B8860B", boxShadow: "0 0 0 2px #d4af3744" }}
-          />
-
-          {/* Center Axle Node */}
-          <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10
-                       w-12 h-12 rounded-full bg-black flex items-center justify-center
-                       text-yellow-400 text-lg font-bold"
-            style={{ border: "2.5px solid #d4af37" }}
-          >
-            ✦
+          <div className="text-center">
+            <h1 className="text-lg font-black bg-gradient-to-r from-[#B8892F] via-[#F5E38A] to-[#B8892F] bg-clip-text text-transparent uppercase tracking-wide">
+              Lucky Spin
+            </h1>
+            <p className="text-[9px] uppercase tracking-widest text-zinc-400 mt-0.5">
+              Outlet: <span className="text-yellow-400 font-bold">{outlet?.name || "Unknown"}</span>
+            </p>
           </div>
         </div>
 
-        {/* Alert/Result Toast Notifications */}
-        {winner && (
-          <div className="w-full max-w-[300px] flex-none animate-fade-in">
-            {winner.isNoWin ? (
-              <div className="text-center py-3 px-5 rounded-xl text-xs font-bold uppercase tracking-wider text-red-300 bg-red-950/90 backdrop-blur-sm border border-red-800">
-                😬 No luck this time — try again!
-              </div>
-            ) : (
-              <div className="text-center py-3 px-5 rounded-xl text-xs font-bold uppercase tracking-wider text-green-300 bg-green-950/90 backdrop-blur-sm border border-green-800">
-                🎉 Winner: {winner.label}!
-              </div>
-            )}
-          </div>
-        )}
+        {/* MIDDLE VIEWPORT */}
+        <div className="flex-1 overflow-y-auto px-6 py-2 flex flex-col items-center gap-4 custom-scrollbar">
 
-        {/* Live Inventory Stock Tracker Section */}
-        <div className="w-full max-w-[300px] flex-1 min-w-[300px]">
-          <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">
-            Remaining Prizes
-          </p>
-          <div className="space-y-2">
-            {campaign.length === 0 ? (
-              <p className="text-center text-zinc-500 text-xs italic py-3">All prizes claimed!</p>
-            ) : (
-              campaign.map((item, i) => {
-                const total = campaign.reduce((s, x) => s + x.qty, 0) + 2;
-                const pct = Math.round((item.qty / total) * 100);
-                return (
-                  <div
-                    key={i}
-                    className="flex justify-between items-center bg-zinc-900/80 backdrop-blur-sm p-2 px-3 rounded-xl border border-zinc-800/60"
-                  >
-                    <span className="text-xs font-semibold text-zinc-200">{item.name}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-zinc-500">{pct}%</span>
-                      <span className="text-[10px] font-extrabold text-yellow-400 bg-yellow-950/60 px-2 py-0.5 rounded-full border border-yellow-500/20">
-                        ×{item.qty}
-                      </span>
+          {/* Wheel Assembly Container */}
+          <div className="relative w-[300px] h-[300px] flex-none mt-1性能 z-20">
+            
+            {/* Top Marker Pin Pointer */}
+            <div
+              className="absolute left-1/2 -translate-x-1/2 z-30"
+              style={{
+                top: "-12px",
+                width: 0,
+                height: 0,
+                borderLeft: "11px solid transparent",
+                borderRight: "11px solid transparent",
+                borderBottom: "24px solid #d4af37",
+                filter: "drop-shadow(0 2px 5px rgba(0,0,0,0.6))",
+              }}
+            />
+
+            {/* Canvas Component */}
+            <canvas
+              ref={canvasRef}
+              width={300}
+              height={300}
+              className="rounded-full relative z-10"
+              style={{ border: "3px solid #B8860B", boxShadow: "0 0 0 2px #d4af3744" }}
+            />
+
+            {/* Center Axle Node */}
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20
+                         w-12 h-12 rounded-full bg-black flex items-center justify-center
+                         text-yellow-400 text-lg font-bold"
+              style={{ border: "2.5px solid #d4af37", boxShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
+            >
+              ✦
+            </div>
+          </div>
+
+          {/* Alert/Result Toast Notifications */}
+          {winner && (
+            <div className="w-full max-w-[300px] flex-none animate-fade-in relative z-20">
+              {winner.isNoWin ? (
+                <div className="text-center py-2 px-4 rounded-xl text-xs font-bold uppercase tracking-wider text-red-300 bg-red-950/90 backdrop-blur-sm border border-red-800">
+                  😬 No luck this time — try again!
+                </div>
+              ) : (
+                <div className="text-center py-2 px-4 rounded-xl text-xs font-bold uppercase tracking-wider text-green-300 bg-green-950/90 backdrop-blur-sm border border-green-800">
+                  🎉 Winner: {winner.label}!
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Live Inventory Stock Tracker Section */}
+          <div className="w-full max-w-[300px] flex-1 min-w-[300px] relative z-10">
+            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-1.5">
+              Remaining Prizes
+            </p>
+            <div className="space-y-1.5">
+              {campaign.length === 0 ? (
+                <p className="text-center text-zinc-500 text-xs italic py-2">All prizes claimed!</p>
+              ) : (
+                campaign.map((item, i) => {
+                  const total = campaign.reduce((s, x) => s + x.qty, 0) + 2;
+                  const pct = Math.round((item.qty / total) * 100);
+                  return (
+                    <div
+                      key={i}
+                      className="flex justify-between items-center bg-zinc-900/80 backdrop-blur-sm p-2 px-3 rounded-xl border border-zinc-800/60"
+                    >
+                      <span className="text-xs font-semibold text-zinc-200">{item.name}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-zinc-500">{pct}%</span>
+                        <span className="text-[10px] font-extrabold text-yellow-400 bg-yellow-950/60 px-2 py-0.5 rounded-full border border-yellow-500/20">
+                          ×{item.qty}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })
-            )}
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ACTION FOOTER BAR (Anchors the main trigger button at baseline) */}
-      <div className="relative z-10 p-6 bg-gradient-to-t from-black via-black to-transparent flex-none">
-        <button
-          onClick={spin}
-          disabled={spinning}
-          className="w-full h-14 rounded-xl bg-gradient-to-r from-[#B8892F] via-[#F5E38A] to-[#B8892F] text-black font-black tracking-widest text-sm shadow-[0_4px_25px_rgba(234,179,8,0.25)] active:scale-95 disabled:opacity-40 transition-all duration-200"
-        >
-          {spinning ? "SPINNING..." : "SPIN WHEEL"}
-        </button>
-      </div>
+        {/* ACTION FOOTER BAR */}
+        <div className="relative z-20 p-4 bg-gradient-to-t from-black via-black to-transparent flex-none">
+          <button
+            onClick={spin}
+            disabled={spinning}
+            className="w-full h-12 rounded-xl bg-gradient-to-r from-[#B8892F] via-[#F5E38A] to-[#B8892F] text-black font-black tracking-widest text-xs shadow-[0_4px_20px_rgba(234,179,8,0.25)] active:scale-95 disabled:opacity-40 transition-all duration-200"
+          >
+            {spinning ? "SPINNING..." : "SPIN WHEEL"}
+          </button>
+        </div>
 
+      </div>
     </div>
   );
 }
