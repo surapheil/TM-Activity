@@ -1,76 +1,108 @@
 import { useNavigate } from "react-router-dom";
-import logo from "../assets/21+Logo - Habesha - Vertical.png";
+
+import logo from "../assets/21+Logo - Habesha - Horizontal.png";
+import mandalaPattern from "../assets/Gemini_Generated_Image_hngu6uhngu6uhngu.png";
 
 export default function StartPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen max-w-md mx-auto bg-gradient-to-b from-black via-zinc-950 to-black text-white flex flex-col justify-between px-6 py-10 relative overflow-hidden">
+    <div className="relative min-h-screen max-w-md mx-auto overflow-hidden bg-black text-white">
 
-      {/* Atmosphere Glow Layer */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(234,179,8,0.08),transparent_60%)]" />
+      {/* Background Glow */}
+      <div className="absolute inset-0 bg-black" />
 
-      {/* Floating Gold Blobs */}
-      <div className="absolute w-72 h-72 bg-yellow-500/10 blur-3xl rounded-full top-[-100px] left-[-100px]" />
-      <div className="absolute w-72 h-72 bg-yellow-600/10 blur-3xl rounded-full bottom-[-120px] right-[-120px]" />
+      {/* Mandala Background */}
+      <div
+        className="absolute inset-0 opacity-[0.08]"
+        style={{
+          backgroundImage: `url(${mandalaPattern})`,
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "95%",
+        }}
+      />
 
-      {/* TOP SECTION */}
-      <div className="flex flex-col items-center mt-8 z-10">
+      {/* Gold Ambient Glow */}
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-72 h-72 bg-yellow-400/10 blur-[120px]" />
 
-        {/* LOGO FRAME */}
-        <div className="p-6 rounded-2xl bg-white/5 border border-yellow-500/20 backdrop-blur-md shadow-lg">
-          <img
-            src={logo}
-            alt="Habesha Logo"
-            className="w-44 md:w-52 object-contain"
-          />
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col min-h-screen px-8 py-10">
+
+        {/* Logo Section */}
+        <div className="flex justify-center mt-8">
+          <div className="relative">
+            <div className="absolute inset-0 bg-yellow-400/20 blur-3xl rounded-full" />
+
+            <img
+              src={logo}
+              alt="Habesha Golden Wheel"
+              className="relative w-56 object-contain"
+            />
+          </div>
         </div>
 
-        {/* BRAND TEXT */}
-        <div className="mt-6 text-center">
-          <h1 className="text-yellow-400 text-2xl md:text-3xl font-extrabold tracking-widest">
-            HABESHA BEER
-          </h1>
+        {/* Center Content */}
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
 
-          <p className="text-gray-400 mt-2 text-sm tracking-wide">
-            Trade Marketing Activation System
+          {/* Small Premium Label */}
+          <div className="mb-6">
+            <span className="px-4 py-1 text-xs tracking-[0.3em] uppercase rounded-full border border-yellow-500/30 text-yellow-300">
+              Spin & Win
+            </span>
+          </div>
+
+          {/* Main Title */}
+          <div className="space-y-2">
+
+            <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-[#B8892F] via-[#F5E38A] to-[#B8892F] bg-clip-text text-transparent">
+              GOLDEN  WHEEL
+            </h1>
+
+            {/* <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-[#B8892F] via-[#F5E38A] to-[#B8892F] bg-clip-text text-transparent">
+             
+            </h1> */}
+
+          </div>
+
+          {/* Divider */}
+          <div className="w-28 h-[2px] bg-gradient-to-r from-transparent via-[#F5E38A] to-transparent my-6" />
+
+          {/* Subtitle */}
+          <p className="text-zinc-400 text-sm tracking-wide max-w-[260px] leading-relaxed">
+            Trade_Marketing
           </p>
+
         </div>
-      </div>
 
-      {/* MIDDLE SECTION */}
-      <div className="text-center z-10">
-        <h2 className="text-white text-3xl md:text-4xl font-extrabold tracking-widest">
-          SPIN & WIN
-        </h2>
+        {/* Start Button */}
+        <div className="pb-6">
 
-        <p className="text-gray-400 mt-3 text-sm leading-relaxed">
-          Engage customers, collect data, and activate outlets with precision.
-        </p>
+          <button
+            onClick={() => navigate("/login")}
+            className="
+              w-full
+              h-16
+              rounded-2xl
+              bg-gradient-to-r
+              from-[#B8892F]
+              via-[#F5E38A]
+              to-[#B8892F]
+              text-black
+              font-extrabold
+              tracking-[0.2em]
+              text-lg
+              shadow-[0_10px_40px_rgba(234,179,8,0.25)]
+              active:scale-95
+              transition-all
+              duration-200
+            "
+          >
+            START→
+          </button>
 
-        <p className="text-yellow-500/70 text-xs mt-4 tracking-wide">
-          Select START to begin activation
-        </p>
-      </div>
+        </div>
 
-      {/* START BUTTON */}
-      <div className="z-10 mb-6">
-        <button
-          onClick={() => navigate("/login")}
-          className="
-            w-full py-4 rounded-2xl font-bold text-lg
-            bg-gradient-to-r from-yellow-600 via-yellow-400 to-yellow-500
-            text-black shadow-[0_0_25px_rgba(234,179,8,0.35)]
-            active:scale-95 hover:scale-[1.02]
-            transition-all duration-300
-          "
-        >
-          START
-        </button>
-
-        <p className="text-center text-gray-500 text-xs mt-3">
-          Powered by Trade Marketing Team
-        </p>
       </div>
     </div>
   );
