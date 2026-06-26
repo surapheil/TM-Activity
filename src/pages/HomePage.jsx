@@ -43,79 +43,138 @@ export default function HomePage() {
     }
   }
 
-  // ── GENERATE PDF REPORT ───────────────────────────────────────────────────
-  const generatePDF = async () => {
-    setDownloading(true);
-    try {
-      // 1. Fetch live winners data from Google Sheet targeting action
-      const response = await fetch(`${API_URL}?action=getWinners`);
-      const result = await response.json();
+  // // ── GENERATE PDF REPORT ───────────────────────────────────────────────────
+  // const generatePDF = async () => {
+  //   setDownloading(true);
+  //   try {
+  //     // 1. Fetch live winners data from Google Sheet targeting action
+  //     const response = await fetch(`${API_URL}?action=getWinners`);
+  //     const result = await response.json();
 
-      if (!result.success) {
-        alert("Error from server: " + (result.message || "Unknown error"));
-        return;
-      }
+  //     if (!result.success) {
+  //       alert("Error from server: " + (result.message || "Unknown error"));
+  //       return;
+  //     }
 
-      if (!result.data || result.data.length === 0) {
-        alert("No winner data found in the 'Winners' sheet tab.");
-        return;
-      }
+  //     if (!result.data || result.data.length === 0) {
+  //       alert("No winner data found in the 'Winners' sheet tab.");
+  //       return;
+  //     }
 
-      // 2. Initialize Portrait A4 Document
-      const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  //     // 2. Initialize Portrait A4 Document
+  //     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
 
-      // 3. Header Styling Banner
-      doc.setFillColor(20, 20, 20); 
-      doc.rect(0, 0, 210, 35, "F");
+  //     // 3. Header Styling Banner
+  //     doc.setFillColor(20, 20, 20); 
+  //     doc.rect(0, 0, 210, 35, "F");
       
-      // Premium Gold Accent Line
-      doc.setFillColor(184, 137, 47);
-      doc.rect(0, 35, 210, 1.5, "F");
+  //     // Premium Gold Accent Line
+  //     doc.setFillColor(184, 137, 47);
+  //     doc.rect(0, 35, 210, 1.5, "F");
 
-      // Brand Title Text
-      doc.setTextColor(212, 175, 55); 
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(22);
-      doc.text("HABESHA SPIN WHEEL", 14, 18);
+  //     // Brand Title Text
+  //     doc.setTextColor(212, 175, 55); 
+  //     doc.setFont("helvetica", "bold");
+  //     doc.setFontSize(22);
+  //     doc.text("HABESHA SPIN WHEEL", 14, 18);
 
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      doc.text("Official Activation Winners Report Summary", 14, 26);
+  //     doc.setTextColor(255, 255, 255);
+  //     doc.setFontSize(10);
+  //     doc.setFont("helvetica", "normal");
+  //     doc.text("Official Activation Winners Report Summary", 14, 26);
 
-      // 4. Map Rows to AutoTable arrays
-      // Uses fallback keys matching standard App Script patterns
-      const tableRows = result.data.map((winner, index) => [
-        index + 1,
-        winner.fullName || winner["fullName"] || winner["Full Name"] || "N/A",
-        winner.phone || winner["phone"] || winner["Phone"] || "N/A",
-        winner.prize || winner["prize"] || winner["Prize"] || "N/A",
-        winner.outletName || winner["outletName"] || winner["Outlet Name"] || "N/A",
-        winner.date || winner["date"] || winner["Date"] ? new Date(winner.date || winner["date"] || winner["Date"]).toLocaleDateString() : "N/A"
-      ]);
+  //     // 4. Map Rows to AutoTable arrays
+  //     // Uses fallback keys matching standard App Script patterns
+  //     const tableRows = result.data.map((winner, index) => [
+  //       index + 1,
+  //       winner.fullName || winner["fullName"] || winner["Full Name"] || "N/A",
+  //       winner.phone || winner["phone"] || winner["Phone"] || "N/A",
+  //       winner.prize || winner["prize"] || winner["Prize"] || "N/A",
+  //       winner.outletName || winner["outletName"] || winner["Outlet Name"] || "N/A",
+  //       winner.date || winner["date"] || winner["Date"] ? new Date(winner.date || winner["date"] || winner["Date"]).toLocaleDateString() : "N/A"
+  //     ]);
 
-      // 5. Inject Premium Styled Data Table
-      // Change from: doc.autoTable({ ... })
-      // Change to this:
-        autoTable(doc, {
-          startY: 45,
-          head: [["#", "Winner Name", "Phone", "Prize Awarded", "Outlet", "Date"]],
-          body: tableRows,
-          headStyles: { fillColor: [184, 137, 47], textColor: [0, 0, 0], fontStyle: "bold" },
-          alternateRowStyles: { fillColor: [248, 248, 248] },
-          styles: { fontSize: 9, font: "helvetica" },
-        });
+  //     // 5. Inject Premium Styled Data Table
+  //     // Change from: doc.autoTable({ ... })
+  //     // Change to this:
+  //       autoTable(doc, {
+  //         startY: 45,
+  //         head: [["#", "Winner Name", "Phone", "Prize Awarded", "Outlet", "Date"]],
+  //         body: tableRows,
+  //         headStyles: { fillColor: [184, 137, 47], textColor: [0, 0, 0], fontStyle: "bold" },
+  //         alternateRowStyles: { fillColor: [248, 248, 248] },
+  //         styles: { fontSize: 9, font: "helvetica" },
+  //       });
 
-      // 6. Direct Client-Side Download Trigger
-      doc.save(`Spin_Wheel_Winners_${new Date().toISOString().split('T')[0]}.pdf`);
+  //     // 6. Direct Client-Side Download Trigger
+  //     doc.save(`Spin_Wheel_Winners_${new Date().toISOString().split('T')[0]}.pdf`);
 
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      alert("Failed to download report. Please check your network or spreadsheet columns.");
-    } finally {
-      setDownloading(false);
+  //   } catch (error) {
+  //     console.error("Error generating PDF:", error);
+  //     alert("Failed to download report. Please check your network or spreadsheet columns.");
+  //   } finally {
+  //     setDownloading(false);
+  //   }
+  // };
+
+
+ const generatePDF = async () => {
+  setDownloading(true);
+  try {
+    alert("Generating PDF with photos, this may take 20–30 seconds...");
+
+    const response = await fetch(`${API_URL}?action=generatePDF`);
+    const result   = await response.json();
+
+    if (!result.success) {
+      alert("Error: " + result.message);
+      return;
     }
-  };
+
+    // Convert base64 → blob → download
+    const byteChars  = atob(result.pdf);
+    const byteArrays = [];
+    for (let i = 0; i < byteChars.length; i += 512) {
+      const slice  = byteChars.slice(i, i + 512);
+      const bytes  = new Uint8Array(slice.length);
+      for (let j = 0; j < slice.length; j++) {
+        bytes[j] = slice.charCodeAt(j);
+      }
+      byteArrays.push(bytes);
+    }
+
+    const pdfBlob = new Blob(byteArrays, { type: "application/pdf" });
+    const url     = URL.createObjectURL(pdfBlob);
+    const a       = document.createElement("a");
+    a.href        = url;
+    a.download    = `all-winners-${new Date().toISOString().split("T")[0]}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed: " + err.message);
+  } finally {
+    setDownloading(false);
+  }
+};
+
+// Helper: fetch image URL and convert to base64 for jsPDF
+const loadImageAsBase64 = (url) => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/jpeg", 0.8));
+    };
+    img.onerror = () => resolve(null); // fail silently
+    img.src = url;
+  });
+};
 
   return (
     <div className="min-h-screen max-w-md mx-auto bg-gradient-to-b from-black via-[#120c00] to-black text-white px-5 py-6 flex flex-col">
