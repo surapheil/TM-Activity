@@ -6,4 +6,4 @@ const OutletPage = () => {
   )
 }
 
-export default OutletPage
+export default OutletPage;

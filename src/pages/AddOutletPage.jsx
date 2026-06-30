@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { getDeviceId } from "../services/deviceId";
+
+// inside handleSubmit, in the payload object:
 
 export default function AddOutletPage() {
 const { user } = useAuth();
@@ -125,15 +128,16 @@ const handleSubmit = async () => {
     }
 
     const payload = {
-      action:    "addOutlet",
-      baId:      user.id,
-      name,
-      address,
-      city,
-      latitude:  lat  ?? "",
-      longitude: lng  ?? "",
-      photo:     photoBase64,
-    };
+  action:    "addOutlet",
+  baId:      user.id,
+  deviceId:  getDeviceId(),   // ✅ new field
+  name,
+  address,
+  city,
+  latitude:  lat  ?? "",
+  longitude: lng  ?? "",
+  photo:     photoBase64,
+};
 
     if (!isOnline()) {
       saveOffline(payload);

@@ -43,80 +43,6 @@ export default function HomePage() {
     }
   }
 
-  // // ── GENERATE PDF REPORT ───────────────────────────────────────────────────
-  // const generatePDF = async () => {
-  //   setDownloading(true);
-  //   try {
-  //     // 1. Fetch live winners data from Google Sheet targeting action
-  //     const response = await fetch(`${API_URL}?action=getWinners`);
-  //     const result = await response.json();
-
-  //     if (!result.success) {
-  //       alert("Error from server: " + (result.message || "Unknown error"));
-  //       return;
-  //     }
-
-  //     if (!result.data || result.data.length === 0) {
-  //       alert("No winner data found in the 'Winners' sheet tab.");
-  //       return;
-  //     }
-
-  //     // 2. Initialize Portrait A4 Document
-  //     const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-
-  //     // 3. Header Styling Banner
-  //     doc.setFillColor(20, 20, 20); 
-  //     doc.rect(0, 0, 210, 35, "F");
-      
-  //     // Premium Gold Accent Line
-  //     doc.setFillColor(184, 137, 47);
-  //     doc.rect(0, 35, 210, 1.5, "F");
-
-  //     // Brand Title Text
-  //     doc.setTextColor(212, 175, 55); 
-  //     doc.setFont("helvetica", "bold");
-  //     doc.setFontSize(22);
-  //     doc.text("HABESHA SPIN WHEEL", 14, 18);
-
-  //     doc.setTextColor(255, 255, 255);
-  //     doc.setFontSize(10);
-  //     doc.setFont("helvetica", "normal");
-  //     doc.text("Official Activation Winners Report Summary", 14, 26);
-
-  //     // 4. Map Rows to AutoTable arrays
-  //     // Uses fallback keys matching standard App Script patterns
-  //     const tableRows = result.data.map((winner, index) => [
-  //       index + 1,
-  //       winner.fullName || winner["fullName"] || winner["Full Name"] || "N/A",
-  //       winner.phone || winner["phone"] || winner["Phone"] || "N/A",
-  //       winner.prize || winner["prize"] || winner["Prize"] || "N/A",
-  //       winner.outletName || winner["outletName"] || winner["Outlet Name"] || "N/A",
-  //       winner.date || winner["date"] || winner["Date"] ? new Date(winner.date || winner["date"] || winner["Date"]).toLocaleDateString() : "N/A"
-  //     ]);
-
-  //     // 5. Inject Premium Styled Data Table
-  //     // Change from: doc.autoTable({ ... })
-  //     // Change to this:
-  //       autoTable(doc, {
-  //         startY: 45,
-  //         head: [["#", "Winner Name", "Phone", "Prize Awarded", "Outlet", "Date"]],
-  //         body: tableRows,
-  //         headStyles: { fillColor: [184, 137, 47], textColor: [0, 0, 0], fontStyle: "bold" },
-  //         alternateRowStyles: { fillColor: [248, 248, 248] },
-  //         styles: { fontSize: 9, font: "helvetica" },
-  //       });
-
-  //     // 6. Direct Client-Side Download Trigger
-  //     doc.save(`Spin_Wheel_Winners_${new Date().toISOString().split('T')[0]}.pdf`);
-
-  //   } catch (error) {
-  //     console.error("Error generating PDF:", error);
-  //     alert("Failed to download report. Please check your network or spreadsheet columns.");
-  //   } finally {
-  //     setDownloading(false);
-  //   }
-  // };
-
 
  const generatePDF = async () => {
   setDownloading(true);
@@ -176,6 +102,19 @@ const loadImageAsBase64 = (url) => {
   });
 };
 
+useEffect(() => {
+  if (!user) return;
+  console.log("Current user.id:", user.id, typeof user.id); // ✅ add this
+
+  const cached = localStorage.getItem(`outlets_${user.id}`);
+  if (cached) {
+    setOutlets(JSON.parse(cached));
+  }
+  loadOutlets();
+}, [user]);
+
+
+
   return (
     <div className="min-h-screen max-w-md mx-auto bg-gradient-to-b from-black via-[#120c00] to-black text-white px-5 py-6 flex flex-col">
       {/* Header */}
@@ -211,11 +150,23 @@ const loadImageAsBase64 = (url) => {
         {outlets.map((outlet) => (
           <div
             key={outlet.id}
-            onClick={() =>
-              navigate(`/campaign/${outlet.id}`, {
-                state: { outlet }
-              })
-            }
+            onClick={() => {
+                const existingCampaign = localStorage.getItem(`campaign_${outlet.id}`);
+                
+                if (existingCampaign) {
+                  const parsed = JSON.parse(existingCampaign);
+                  const hasRemainingPrizes = parsed.some(p => p.qty > 0);
+                  
+                  if (hasRemainingPrizes) {
+                    // Campaign already running with prizes left — go straight to spin
+                    navigate(`/spin/${outlet.id}`, { state: { outlet } });
+                    return;
+                  }
+                }
+                
+                // No campaign yet, or all prizes exhausted — go to setup
+                navigate(`/campaign/${outlet.id}`, { state: { outlet } });
+              }}
             className="bg-white/5 border border-yellow-500/20 rounded-2xl p-4 backdrop-blur-md cursor-pointer active:scale-[0.98] transition-all"
           >
             <div className="flex items-center gap-3">

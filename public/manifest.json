@@ -1,21 +1,27 @@
 {
+  "name": "Habesha Spin Wheel",
   "short_name": "Habesha Spin",
-  "name": "Habesha Golden Wheel Activation",
+  "description": "Habesha Spin Wheel Outlet Activation App",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#B8892F",
   "icons": [
     {
       "src": "/icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
       "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "sizes": "512x512",
       "type": "image/png",
-      "sizes": "512x512"
+      "purpose": "maskable"
     }
-  ],
-  "start_url": "/",
-  "background_color": "#000000",
-  "theme_color": "#b8892f",
-  "display": "standalone",
-  "orientation": "portrait"
+  ]
 }
